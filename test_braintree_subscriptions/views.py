@@ -24,9 +24,10 @@ def token(request, plan_id):
     return JsonResponse({"error": "Plan doesn't exist"})
 
 
-def create_customer(request):
-    if request.POST:
-        form = CustomerForm(request.POST)
+def create_customer(request, *args, **kwargs):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        form = CustomerForm(data)
         if form.is_valid():
             result = braintree.Customer.create(form.cleaned_data)
             if result.is_success:
@@ -44,9 +45,9 @@ def create_customer(request):
 
 
 def subscribe(request, plan_id):
-    if request.POST:
-        print request.POST
-        form = SubscriptionForm(request.POST)
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        form = SubscriptionForm(data)
         if form.is_valid():
             data = form.cleaned_data
             result = braintree.PaymentMethod.create({
